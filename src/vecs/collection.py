@@ -447,7 +447,8 @@ class Collection:
     def query(
         self,
         data: Union[Iterable[Numeric], Any],
-        limit: int = 10,
+        limit: Optional[int],
+        distance: Optional[Union[int, float]] = None,
         filters: Optional[Dict] = None,
         measure: Union[IndexMeasure, str] = IndexMeasure.cosine_distance,
         include_value: bool = False,
@@ -488,6 +489,10 @@ class Collection:
 
         if probes < 1:
             raise ArgError("probes must be >= 1")
+
+        # At least one of the two values should be set
+        if not limit and not distance:
+            limit = 10
 
         if limit > 1000:
             raise ArgError("limit must be <= 1000")
@@ -543,7 +548,10 @@ class Collection:
             )
 
         stmt = stmt.order_by(distance_clause)
-        stmt = stmt.limit(limit)
+        if limit:
+            stmt = stmt.limit(limit)
+        if distance:
+            stmt = stmt.where(distance_clause <= distance)
 
         with self.client.Session() as sess:
             with sess.begin():
