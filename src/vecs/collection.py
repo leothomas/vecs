@@ -494,8 +494,8 @@ class Collection:
         if not limit and not distance:
             limit = 10
 
-        if limit > 1000:
-            raise ArgError("limit must be <= 1000")
+        # if limit > 1000:
+        #     raise ArgError("limit must be <= 1000")
 
         # ValueError on bad input
         try:
