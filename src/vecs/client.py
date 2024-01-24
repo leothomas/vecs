@@ -57,7 +57,24 @@ class Client:
         Returns:
             None
         """
-        self.engine = create_engine(connection_string)
+
+        config_params = {
+            "maintenance_work_mem": "2048MB",
+            "work_mem": "128MB",
+            "random_page_cost": "1.1",
+            "effective_io_concurrency": 100,
+            "temp_buffers": "512MB",
+            "max_parallel_maintenance_workers": 7,
+        }
+
+        self.engine = create_engine(
+            connection_string,
+            connect_args={
+                "options": " ".join(
+                    [f"-c {key}={value}" for key, value in config_params.items()]
+                )
+            },
+        )
         self.meta = MetaData(schema="vecs")
         self.Session = sessionmaker(self.engine)
 
