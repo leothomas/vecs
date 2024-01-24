@@ -65,6 +65,7 @@ class Client:
             with sess.begin():
                 sess.execute(text("create schema if not exists vecs;"))
                 sess.execute(text("create extension if not exists vector;"))
+                sess.execute(text("alter extension vector update;"))
                 self.vector_version: str = sess.execute(
                     text(
                         "select installed_version from pg_available_extensions where name = 'vector' limit 1;"
